@@ -5,7 +5,7 @@ function instance(system, id, config) {
 	var self = this;
 
 	instance_skel.apply(this, arguments);
-	
+
 	self.actions();
 	self.feedbacks();
 
@@ -35,8 +35,8 @@ instance.prototype.initSockets = function() {
 
 	if (config.rxPort && config.rxEnabled) {
 		self.in = mamsc.in(config.rxPort, config.rxAddress)
-					   .on('error', self.onSocketError.bind(self))
-					   .on('message', self.onMessage.bind(self));
+					.on('error', self.onSocketError.bind(self))
+					.on('message', self.onMessage.bind(self));
 
 		self.in.config.deviceId = Number(config.rxDeviceId);
 		self.in.config.groupId  = Number(config.rxGroupId);
@@ -48,7 +48,7 @@ instance.prototype.initSockets = function() {
 
 		self.out.config.deviceId = Number(config.txDeviceId);
 		self.out.config.groupId  = Number(config.txGroupId);
-		self.out.config.sendTo   = String(config.txSendTo);        
+		self.out.config.sendTo   = String(config.txSendTo);
 	}
 
 	if ((config.rxPort && config.rxEnabled ? self.in : true) && (config.txPort ? self.out : true)) {
@@ -62,16 +62,16 @@ instance.prototype.initVariables = function() {
 
 	if (self.config.rxExecList) {
 		var execs = self.config.rxExecList.split(',');
-	
+
 		for (var index in execs) {
 			var exec = self.getExec(execs[index].replace(/^([0-9]+)$/, '$1.1'));
-			
+
 			exec.vardef = true;
 			varlist.push({
 				name:  'exec:' + exec.id,
 				label: 'Fader position of exec ' + exec.id
 			});
-		}            
+		}
 	}
 
 	self.setVariableDefinitions(varlist);
@@ -83,8 +83,8 @@ instance.prototype.closeSockets = function() {
 	if (self.in) {
 		try {
 			self.in.close();
-		} catch (err) {   
-			self.onSocketError(err);         
+		} catch (err) {
+			self.onSocketError(err);
 		} finally {
 			self.in = null;
 		}
@@ -210,7 +210,7 @@ instance.prototype.action = function(action) {
 
 		case 'off':
 			self.out.off(self.compileExec(options));
-			break;    
+			break;
 	}
 };
 
@@ -218,7 +218,7 @@ instance.prototype.feedback = function(feedback) {
 	var self    = this;
 	var options = feedback.options;
 	var exec    = self.getExec(self.compileExec(options));
-	var style   = { 
+	var style   = {
 		color:   options.foreground,
 		bgcolor: options.background
 	};
@@ -226,7 +226,7 @@ instance.prototype.feedback = function(feedback) {
 	switch (feedback.type) {
 		case 'active':
 			return exec.active === Boolean(options.active) ? style : {};
-		
+
 		case 'paused':
 			return exec.paused === Boolean(options.paused) ? style : {};
 
@@ -235,7 +235,7 @@ instance.prototype.feedback = function(feedback) {
 
 		case 'fader':
 			return eval('exec.fader' + (options.operator || '==') + 'Number(options.fader)') ? style : {};
-		
+
 		default:
 			return {};
 	}
@@ -255,7 +255,7 @@ instance.prototype.actions = function() {
 
 instance.prototype.feedbacks = function() {
 	var self = this;
-	
+
 	self.setFeedbackDefinitions(require('./feedback')(self));
 };
 

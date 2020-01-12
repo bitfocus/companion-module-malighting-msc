@@ -1,19 +1,19 @@
 {
-  "name": "malighting-msc",
-  "version": "0.1.1",
-  "api_version": "1.0.0",
-  "keywords": [
-    "Lighting",
-    "Show Control"
-  ],
-  "manufacturer": "MA Lighting",
-  "product": "dot2/grandMA2 MSC",
-  "shortname": "mamsc",
-  "description": "MIDI Schow Control over Ethernet for MA lighting",
-  "main": "module.js",
-  "author": "Christian Volmering <christian@volmering.name>",
-  "license": "MIT",
-  "dependencies": {
-    "mamsc": "^0.1.5"
-  }
+	"name": "malighting-msc",
+	"version": "0.1.1",
+	"api_version": "1.0.0",
+	"keywords": [
+		"Lighting",
+		"Show Control"
+	],
+	"manufacturer": "MA Lighting",
+	"product": "dot2/grandMA2 MSC",
+	"shortname": "mamsc",
+	"description": "MIDI Schow Control over Ethernet for MA lighting",
+	"main": "module.js",
+	"author": "Christian Volmering <christian@volmering.name>",
+	"license": "MIT",
+	"dependencies": {
+		"mamsc": "^0.1.5"
+	}
 }
