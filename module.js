@@ -34,26 +34,96 @@ instance.prototype.initSockets = function() {
 	self.closeSockets();
 
 	if (config.rxPort && config.rxEnabled) {
-		self.in = mamsc.in(config.rxPort, config.rxAddress)
-					.on('error', self.onSocketError.bind(self))
-					.on('message', self.onMessage.bind(self));
-
-		self.in.config.deviceId = Number(config.rxDeviceId);
-		self.in.config.groupId  = Number(config.rxGroupId);
+		self.initReceiver(config);
 	}
 
 	if (config.txPort) {
-		self.out = mamsc.out(config.txPort, config.txAddress)
-						.on('error', self.onSocketError.bind(self));
-
-		self.out.config.deviceId = Number(config.txDeviceId);
-		self.out.config.groupId  = Number(config.txGroupId);
-		self.out.config.sendTo   = String(config.txSendTo);
+		self.initTransmitter(config);
 	}
+};
 
-	if ((config.rxPort && config.rxEnabled ? self.in : true) && (config.txPort ? self.out : true)) {
+instance.prototype.initReceiver = function(config) {
+	var self = this;
+
+	self.status(self.STATUS_WARNING, 'Initializing');
+
+	self.in = mamsc.in(config.rxPort, config.rxAddress)
+		.on('error', function (err) {
+			if ('ProtocolError' !== err.name) {
+				self.closeReceiver();
+				self.status(self.STATUS_ERROR);
+				self.log('error', err.message);
+			} else {
+				self.log('warn', err.message);
+			}
+		})
+		.on('ready', function () {
+			self.in.ready = true;
+			self.checkStatus();
+		})
+		.on('message', self.onMessage.bind(self));
+
+	self.in.config.deviceId = Number(config.rxDeviceId);
+	self.in.config.groupId  = Number(config.rxGroupId);
+};
+
+instance.prototype.initTransmitter = function(config) {
+	var self = this;
+
+	self.status(self.STATUS_WARNING, 'Initializing');
+
+	self.out = mamsc.out(config.txPort, config.txAddress)
+		.on('error', function (err) {
+			self.closeTransmitter();
+			self.status(self.STATUS_ERROR);
+			self.log('error', err.message);
+		})
+		.on('ready', function () {
+			self.out.ready = true;
+			self.checkStatus();
+		});
+
+	self.out.config.deviceId = Number(config.txDeviceId);
+	self.out.config.groupId  = Number(config.txGroupId);
+	self.out.config.sendTo   = String(config.txSendTo);
+};
+
+instance.prototype.checkStatus = function() {
+	var self = this;
+
+	if ((self.in ? self.in.ready : true) && (self.out ? self.out.ready : true)) {
 		self.status(self.STATUS_OK);
 	}
+};
+
+instance.prototype.closeSockets = function() {
+	var self = this;
+
+	if (self.in) {
+		self.closeReceiver();
+	}
+
+	if (self.out) {
+		self.closeTransmitter();
+	}
+
+	self.status(self.STATUS_UNKNOWN);
+};
+
+instance.prototype.closeReceiver = function() {
+	var self = this;
+
+	self.in.removeAllListeners();
+	self.in.close();
+	self.in = null;
+};
+
+instance.prototype.closeTransmitter = function() {
+	var self = this;
+
+	self.out.removeAllListeners();
+	self.out.close();
+	self.out = null;
 };
 
 instance.prototype.initVariables = function() {
@@ -75,35 +145,6 @@ instance.prototype.initVariables = function() {
 	}
 
 	self.setVariableDefinitions(varlist);
-};
-
-instance.prototype.closeSockets = function() {
-	var self = this;
-
-	if (self.in) {
-		try {
-			self.in.close();
-		} catch (err) {
-			self.onSocketError(err);
-		} finally {
-			self.in = null;
-		}
-	}
-
-	if (self.out) {
-		self.out = null;
-	}
-};
-
-instance.prototype.onSocketError = function(err) {
-	var self = this;
-
-	self.log('error', err.message);
-
-	if ('bind' === err.syscall) {
-		self.in = null;
-		self.status(self.STATUS_ERROR);
-	}
 };
 
 instance.prototype.updateConfig = function(config) {
