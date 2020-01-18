@@ -1,5 +1,7 @@
-exports = module.exports = function(instance) {
-	return {
+exports = module.exports = function() {
+	var self = this;
+
+	self.system.emit('instance_actions', self.id, {
 		'goto': {
 			label:   'Goto a specific cue',
 			options: [
@@ -8,7 +10,7 @@ exports = module.exports = function(instance) {
 					label:    'Cue',
 					tooltip:  'Cue Number',
 					id:       'cue',
-					regex:    instance.REGEX_FLOAT_OR_INT,
+					regex:    self.REGEX_CUE_NUMBER,
 					required: true
 				},
 				{
@@ -99,7 +101,7 @@ exports = module.exports = function(instance) {
 					id:       'percent',
 					required: true,
 					min:      0,
-					max:      100        
+					max:      100
 				},
 				{
 					type:     'number',
@@ -141,7 +143,7 @@ exports = module.exports = function(instance) {
 					id:       'macro',
 					required: true,
 					min:      1,
-					max:      255        
+					max:      255
 				}
 			]
 		},
@@ -169,5 +171,5 @@ exports = module.exports = function(instance) {
 				}
 			]
 		}
-	};
+	});
 };

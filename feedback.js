@@ -1,7 +1,9 @@
-exports = module.exports = function(instance) {
-	return {
+exports = module.exports = function() {
+	var self = this;
+
+	self.setFeedbackDefinitions({
 		'active': {
-			label:   'Executor running state feedback',
+			label:   'Executor active state feedback',
 			options: [
 				{
 					type:     'number',
@@ -33,13 +35,13 @@ exports = module.exports = function(instance) {
 					type:    'colorpicker',
 					label:   'Foreground Color',
 					id:      'foreground',
-					default: instance.rgb(255, 255, 255)
+					default: self.rgb(255, 255, 255)
 				},
 				{
 					type:    'colorpicker',
 					label:   'Background Color',
 					id:      'background',
-					default: instance.rgb(0, 0, 0)
+					default: self.rgb(0, 0, 0)
 				}
 			]
 		},
@@ -76,13 +78,13 @@ exports = module.exports = function(instance) {
 					type:    'colorpicker',
 					label:   'Foreground Color',
 					id:      'foreground',
-					default: instance.rgb(255, 255, 255)
+					default: self.rgb(255, 255, 255)
 				},
 				{
 					type:    'colorpicker',
 					label:   'Background Color',
 					id:      'background',
-					default: instance.rgb(0, 0, 0)
+					default: self.rgb(0, 0, 0)
 				}
 			]
 		},
@@ -94,7 +96,7 @@ exports = module.exports = function(instance) {
 					label:    'Cue',
 					tooltip:  'Cue Number',
 					id:       'cue',
-					regex:    instance.REGEX_FLOAT_OR_INT,
+					regex:    self.REGEX_CUE_NUMBER,
 					required: true
 				},
 				{
@@ -121,13 +123,13 @@ exports = module.exports = function(instance) {
 					type:    'colorpicker',
 					label:   'Foreground Color',
 					id:      'foreground',
-					default: instance.rgb(255, 255, 255)
+					default: self.rgb(255, 255, 255)
 				},
 				{
 					type:    'colorpicker',
 					label:   'Background Color',
 					id:      'background',
-					default: instance.rgb(0, 0, 0)
+					default: self.rgb(0, 0, 0)
 				}
 			]
 		},
@@ -141,7 +143,7 @@ exports = module.exports = function(instance) {
 					id:       'fader',
 					required: true,
 					min:      0,
-					max:      100        
+					max:      100
 				},
 				{
 					type:    'dropdown',
@@ -182,15 +184,15 @@ exports = module.exports = function(instance) {
 					type:    'colorpicker',
 					label:   'Foreground Color',
 					id:      'foreground',
-					default: instance.rgb(255, 255, 255)
+					default: self.rgb(255, 255, 255)
 				},
 				{
 					type:    'colorpicker',
 					label:   'Background Color',
 					id:      'background',
-					default: instance.rgb(0, 0, 0)
+					default: self.rgb(0, 0, 0)
 				}
 			]
 		}
-	};
+	});
 };

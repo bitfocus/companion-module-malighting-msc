@@ -1,4 +1,6 @@
-exports = module.exports = function(instance) {
+exports = module.exports = function() {
+	var self = this;
+
 	return [
 		{
 			type:    'text',
@@ -12,7 +14,7 @@ exports = module.exports = function(instance) {
 			id:      'txAddress',
 			label:   'Transmitter Address',
 			width:   8,
-			regex:   instance.REGEX_IP,
+			regex:   self.REGEX_IP,
 			default: '255.255.255.255',
 			tooltip: 'Address to send outgoing messages to.'
 		},
@@ -63,7 +65,7 @@ exports = module.exports = function(instance) {
 			id:      'rxAddress',
 			label:   'Receiver Address',
 			width:   8,
-			regex:   instance.REGEX_IP,
+			regex:   self.REGEX_IP,
 			default: '0.0.0.0',
 			tooltip: 'Address to listen for incoming messages on.'
 		},

@@ -46,7 +46,7 @@ Be aware that feedbacks are dependent on MSC messages comming from the console a
 ## Feedbacks
 | Feedback | Parameters |
 | --- | --- |
-| Executor running state feedback | Executor Number, [Page Number], Active, Foreground Color, Background Color |
+| Executor active state feedback | Executor Number, [Page Number], Active, Foreground Color, Background Color |
 | Executor paused state feedback | Executor Number, [Page Number], Paused, Foreground Color, Background Color |
 | Cue list feedback | Cue Number, Executor Number, [Page Number], Foreground Color, Background Color |
 | Fader position feedback | Percent, Operator, Executor Number, [Page Number], Foreground Color, Background Color |

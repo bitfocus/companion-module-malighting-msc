@@ -6,6 +6,8 @@ function instance(system, id, config) {
 
 	instance_skel.apply(this, arguments);
 
+	self.defineConst('REGEX_CUE_NUMBER', '/^[1-9]*[0-9](\.[0-9]{1,3})?$/');
+
 	self.actions();
 	self.feedbacks();
 
@@ -282,23 +284,9 @@ instance.prototype.feedback = function(feedback) {
 	}
 };
 
-instance.prototype.config_fields = function() {
-	var self = this;
-
-	return require('./config')(self);
-};
-
-instance.prototype.actions = function() {
-	var self = this;
-
-	self.system.emit('instance_actions', self.id, require('./action')(self));
-};
-
-instance.prototype.feedbacks = function() {
-	var self = this;
-
-	self.setFeedbackDefinitions(require('./feedback')(self));
-};
+instance.prototype.config_fields = require('./config');
+instance.prototype.actions       = require('./action');
+instance.prototype.feedbacks     = require('./feedback');
 
 instance_skel.extendedBy(instance);
 exports = module.exports = instance;
