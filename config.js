@@ -6,7 +6,7 @@ exports = module.exports = function() {
 			type:    'text',
 			id:      'info',
 			width:   12,
-			label:   'Console/onPC configuration',
+			label:   'Console/onPC Configuration',
 			value:   'Goto Setup ⇒ MIDI Show Control. Set mode to <code>Ethernet</code>, exec to <code>Exec.Page</code> and the command format to <code>All</code>. MSC In and MSC Out ports need to be between <code>6000</code> and <code>6100</code> and shouldn\'t be the same to prevent loops.'
 		},
 		{
@@ -109,10 +109,22 @@ exports = module.exports = function() {
 		{
 			type:    'textinput',
 			id:      'rxExecList',
-			label:   'Receiver Executor List (Format: exec[.page], Comma Separated)',
-			width:   12,
+			label:   'Receiver Executor List (Comma Separated)',
+			width:   8,
 			regex:   '/^([0-9]+(\.[0-9]+)?(,[0-9]+(\.[0-9]+)?)*)?$/',
 			tooltip: 'Comma separated list of executors that will be created as variables and updated with their fader position.'
+		},
+		{
+			type:    'dropdown',
+			id:      'consoleType',
+			label:   'Console/onPC Type',
+			width:   4,
+			choices: [
+				{ id: 'dot', label: 'dot2'     },
+				{ id: 'gma', label: 'grandMA2' }
+			],
+			default: 'dot',
+			tooltip: 'Type of Console/onPC you want to communicate with.'
 		}
 	];
 };

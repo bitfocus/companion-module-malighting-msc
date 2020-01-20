@@ -136,12 +136,15 @@ instance.prototype.initVariables = function() {
 		var execs = self.config.rxExecList.split(',');
 
 		for (var index in execs) {
-			var exec = self.getExec(execs[index].replace(/^([0-9]+)$/, '$1.1'));
+			var exec = self.getExec(execs[index].replace(/^([0-9]+)(\.([0-9]+))?$/,
+				function(s, p1, p2, p3) {
+					return (p3 || p1) + '.' + (p3 ? p1 : 1)
+				}));
 
 			exec.vardef = true;
 			varlist.push({
-				name:  'exec:' + exec.id,
-				label: 'Fader position of exec ' + exec.id
+				name:  'exec:' + exec.name,
+				label: 'Fader position of exec ' + exec.name
 			});
 		}
 	}
@@ -161,7 +164,7 @@ instance.prototype.getExec = function(exec) {
 
 	if (!self.execs.hasOwnProperty(exec)) {
 		self.execs[exec] = {
-			id:     exec,
+			name:   (String(exec).split('.')[1] || 1) + '.' + parseInt(exec),
 			active: undefined,
 			paused: undefined,
 			fader:  undefined,
@@ -173,8 +176,13 @@ instance.prototype.getExec = function(exec) {
 	return self.execs[exec];
 };
 
-instance.prototype.compileExec = function(options) {
-	return Number(parseInt(options.exec || 0) + '.' + parseInt(options.page || 1));
+instance.prototype.compileExec = function(options, feedback) {
+	var self = this;
+	var gma  = self.config.consoleType === 'gma';
+	var exec = options.exec - gma;
+	var page = !exec && !feedback && !gma ? 0 : parseInt(options.page) || 1;
+
+	return Number((exec < 0 ? 0 : exec) + '.' + page);
 };
 
 instance.prototype.onMessage = function(command, data) {
@@ -208,7 +216,7 @@ instance.prototype.onMessage = function(command, data) {
 			exec.fader = Math.round(data.position.percent);
 
 			if (exec.vardef) {
-				self.setVariable('exec:' + exec.id, exec.fader);
+				self.setVariable('exec:' + exec.name, exec.fader);
 			}
 
 			self.checkFeedbacks('fader');
@@ -260,7 +268,7 @@ instance.prototype.action = function(action) {
 instance.prototype.feedback = function(feedback) {
 	var self    = this;
 	var options = feedback.options;
-	var exec    = self.getExec(self.compileExec(options));
+	var exec    = self.getExec(self.compileExec(options, true));
 	var style   = {
 		color:   options.foreground,
 		bgcolor: options.background

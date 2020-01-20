@@ -2,7 +2,7 @@
 *MIDI Schow Control over Ethernet for MA lighting*
 
 This is an implementation of the MIDI Show Control protocol used by MA lighting.
-While initially developed for the dot2 lineup it also works for grandMA with some slight differences which are documented below.
+While initially developed for the dot2 lineup it also works for grandMA2 with some slight differences which are documented below.
 
 ## Console/onPC configuration
 You are required to set the MIDI Show Control mode to `Ethernet`, exec to `Exec.Page` and the command format to `All`.
@@ -23,12 +23,13 @@ MIDI channels are ignored when mode is set to `Ethernet`.
 | Receiver Device ID | Set this to a value between `0` and `111` to only listen for messages received for this Device ID.<br>We'll still react on messages send to everyone. |
 | Receiver Group ID | Set this to a value between `1` and `15` to only listen for messages received for this Group ID.<br>We'll still react on messages send to everyone. |
 | Receiver Enabled | Check this to enable the Receiver.<br>Keep it disabled if you just want to execute actions but don't need feedback or dynamic variables. |
-| Receiver Executor List | This is a list of executors in the format: `exec[.page]`, comma separated.<br>It's used to create dynamic variables containing the fader position of the listed executors. |
+| Receiver Executor List | This is a list of executors in the format: `[page.]exec`, comma separated.<br>It's used to create dynamic variables containing the fader position of the listed executors. |
+| Console/onPC Type | Type of Console/onPC you want to communicate with. |
 
 ## Limitations
 Generally executor numbers can be between `0` and `127`. This is a protocol limitation.
-If you don't define an executor then the main executor is assumed on a dot2 or the first executor on a grandMA which makes executor numbering for the grandMA zero based.  
-By default page `1` is assumed for all executors. The dot2 only supports control of page `1` via MSC while the grandMA does support different pages.  
+If you don't define an executor or use `0` then the main executor is assumed on a dot2 or the first executor on a grandMA2. The grand master can't be controlled through MSC.  
+By default page `1` is assumed for all executors. The dot2 only supports control of page `1` via MSC while the grandMA2 does support different pages. Note that the main executor is technically not on a page so when the executor is set to `0` and the console type is set to `dot2`, the page setting isn't used.  
 Some actions support an optional fade time in seconds which can be between `0` and `3600`.  
 Macro numbers can be between `1` and `255`.  
 Be aware that feedbacks are dependent on MSC messages comming from the console and that fader positions or executor states are only known once they've been received.
