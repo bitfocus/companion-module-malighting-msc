@@ -9,10 +9,10 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
-mamsc@^0.1.5:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/mamsc/-/mamsc-0.1.5.tgz#0c300ea8510031daa557c66db6aec65b85b198e9"
-  integrity sha512-AJ8BngCZ8GnLi7fWpDpnC2kCQJaIP+aZbwsB0ZbN2i1SpkAFxezVFYoN7DCGa8q2JYDqO+HfxwGWyoRE0XlZbg==
+mamsc@>=0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/mamsc/-/mamsc-0.1.6.tgz#4f1aec7aeaf2e13c036c84abeaf17d7135829e74"
+  integrity sha512-H4dRvpuky/78rWTjyiS0rYN+Xyn76Gg0dp6TJIZfYu1Z+B8Unbstr13v+J0XxjoA1PWCNgphxJDuxijCfnRkDg==
   dependencies:
     semver "^5.7.1"
   optionalDependencies:
