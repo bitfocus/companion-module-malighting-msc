@@ -1,300 +1,268 @@
-var instance_skel = require('../../instance_skel');
-var mamsc         = require('mamsc');
+const InstanceSkel        = require('../../instance_skel')
+const ConfigFields        = require('./config')
+const InstanceActions     = require('./action')
+const FeedbackDefinitions = require('./feedback')
+const MidiShowControl     = require('mamsc')
 
-function instance(system, id, config) {
-	var self = this;
+exports = module.exports = class Instance
+	extends ConfigFields(InstanceActions(FeedbackDefinitions(InstanceSkel))) {
 
-	instance_skel.apply(this, arguments);
+	constructor (...args) {
+		super(...args)
 
-	self.defineConst('REGEX_CUE_NUMBER', '/^[1-9]*[0-9](\.[0-9]{1,3})?$/');
+		this.execs = {}
+		this.in    = null
+		this.out   = null
 
-	self.actions();
-	self.feedbacks();
-
-	return self;
-}
-
-instance.prototype.init = function() {
-	var self = this;
-
-	self.execs = {};
-
-	self.initSockets();
-	self.initVariables();
-};
-
-instance.prototype.destroy = function() {
-	var self = this;
-
-	self.closeSockets();
-};
-
-instance.prototype.initSockets = function() {
-	var self   = this;
-	var config = self.config;
-
-	self.closeSockets();
-
-	if (config.rxPort && config.rxEnabled) {
-		self.initReceiver(config);
+		this.defineConst('REGEX_CUE_NUMBER', '/^[1-9]*[0-9](\.[0-9]{1,3})?$/')
+		this.actions()
+		this.feedbacks()
 	}
 
-	if (config.txPort) {
-		self.initTransmitter(config);
-	}
-};
-
-instance.prototype.initReceiver = function(config) {
-	var self = this;
-
-	self.status(self.STATUS_WARNING, 'Initializing');
-
-	self.in = mamsc.in(config.rxPort, config.rxAddress)
-		.on('error', function (err) {
-			if ('ProtocolError' !== err.name) {
-				self.closeReceiver();
-				self.status(self.STATUS_ERROR);
-				self.log('error', err.message);
-			} else {
-				self.log('warn', err.message);
-			}
-		})
-		.on('ready', function () {
-			self.in.ready = true;
-			self.checkStatus();
-		})
-		.on('message', self.onMessage.bind(self));
-
-	self.in.config.deviceId = Number(config.rxDeviceId);
-	self.in.config.groupId  = Number(config.rxGroupId);
-};
-
-instance.prototype.initTransmitter = function(config) {
-	var self = this;
-
-	self.status(self.STATUS_WARNING, 'Initializing');
-
-	self.out = mamsc.out(config.txPort, config.txAddress)
-		.on('error', function (err) {
-			self.closeTransmitter();
-			self.status(self.STATUS_ERROR);
-			self.log('error', err.message);
-		})
-		.on('ready', function () {
-			self.out.ready = true;
-			self.checkStatus();
-		});
-
-	self.out.config.deviceId = Number(config.txDeviceId);
-	self.out.config.groupId  = Number(config.txGroupId);
-	self.out.config.sendTo   = String(config.txSendTo);
-};
-
-instance.prototype.checkStatus = function() {
-	var self = this;
-
-	if ((self.in ? self.in.ready : true) && (self.out ? self.out.ready : true)) {
-		self.status(self.STATUS_OK);
-	}
-};
-
-instance.prototype.closeSockets = function() {
-	var self = this;
-
-	if (self.in) {
-		self.closeReceiver();
+	init () {
+		this.initSockets()
+		this.initVariables()
 	}
 
-	if (self.out) {
-		self.closeTransmitter();
+	destroy () {
+		this.closeSockets()
 	}
 
-	self.status(self.STATUS_UNKNOWN);
-};
+	initSockets () {
+		const config = this.config
 
-instance.prototype.closeReceiver = function() {
-	var self = this;
+		this.closeSockets()
 
-	self.in.removeAllListeners();
-	self.in.close();
-	self.in = null;
-};
+		if (config.rxPort && config.rxEnabled) {
+			this.initReceiver(config)
+		}
 
-instance.prototype.closeTransmitter = function() {
-	var self = this;
-
-	self.out.removeAllListeners();
-	self.out.close();
-	self.out = null;
-};
-
-instance.prototype.initVariables = function() {
-	var self    = this;
-	var varlist = [];
-
-	if (self.config.rxExecList) {
-		var execs = self.config.rxExecList.split(',');
-
-		for (var index in execs) {
-			var exec = self.getExec(execs[index].replace(/^([0-9]+)(\.([0-9]+))?$/,
-				function(s, p1, p2, p3) {
-					return (p3 || p1) + '.' + (p3 ? p1 : 1)
-				}));
-
-			exec.vardef = true;
-			varlist.push({
-				name:  'exec:' + exec.name,
-				label: 'Fader position of exec ' + exec.name
-			});
+		if (config.txPort) {
+			this.initTransmitter(config)
 		}
 	}
 
-	self.setVariableDefinitions(varlist);
-};
+	initReceiver (config) {
+		this.status(this.STATUS_WARNING, 'Initializing')
 
-instance.prototype.updateConfig = function(config) {
-	var self = this;
+		this.in = MidiShowControl.in(config.rxPort, config.rxAddress)
+			.on('error', err => {
+				if ('ProtocolError' !== err.name) {
+					this.closeReceiver()
+					this.status(this.STATUS_ERROR)
+					this.log('error', err.message)
+				} else {
+					this.log('warn', err.message)
+				}
+			})
+			.on('ready', () => {
+				this.in.ready = true
+				this.checkStatus()
+			})
+			.on('message', this.onMessage.bind(this))
 
-	self.config = config;
-	self.init();
-};
-
-instance.prototype.getExec = function(exec) {
-	var self = this;
-
-	if (!self.execs.hasOwnProperty(exec)) {
-		self.execs[exec] = {
-			name:   (String(exec).split('.')[1] || 1) + '.' + parseInt(exec),
-			active: undefined,
-			paused: undefined,
-			fader:  undefined,
-			cue:    undefined,
-			vardef: false
-		};
+		this.in.config.deviceId = Number(config.rxDeviceId)
+		this.in.config.groupId  = Number(config.rxGroupId)
 	}
 
-	return self.execs[exec];
-};
+	initTransmitter (config) {
+		this.status(this.STATUS_WARNING, 'Initializing')
 
-instance.prototype.compileExec = function(options, feedback) {
-	var self = this;
-	var gma  = self.config.consoleType === 'gma';
-	var exec = options.exec - gma;
-	var page = !exec && !feedback && !gma ? 0 : parseInt(options.page) || 1;
+		this.out = MidiShowControl.out(config.txPort, config.txAddress)
+			.on('error', err => {
+				this.closeTransmitter()
+				this.status(this.STATUS_ERROR)
+				this.log('error', err.message)
+			})
+			.on('ready', () => {
+				this.out.ready = true
+				this.checkStatus()
+			})
 
-	return Number((exec < 0 ? 0 : exec) + '.' + page);
-};
+		this.out.config.deviceId = Number(config.txDeviceId)
+		this.out.config.groupId  = Number(config.txGroupId)
+		this.out.config.sendTo   = String(config.txSendTo)
+	}
 
-instance.prototype.onMessage = function(command, data) {
-	var self = this;
-	var exec = self.getExec(data.exec);
+	checkStatus () {
+		if ((this.in ? this.in.ready : true) && (this.out ? this.out.ready : true)) {
+			this.status(this.STATUS_OK)
+		}
+	}
 
-	switch (command) {
-		case 'goto':
-			exec.active = true;
-			exec.paused = false;
-			exec.cue    = data.cue;
+	closeSockets () {
+		if (this.in) {
+			this.closeReceiver()
+		}
 
-			self.checkFeedbacks('paused');
-			self.checkFeedbacks('active');
-			self.checkFeedbacks('cue');
-			break;
+		if (this.out) {
+			this.closeTransmitter()
+		}
 
-		case 'pause':
-			exec.paused = true;
+		this.status(this.STATUS_UNKNOWN)
+	}
 
-			self.checkFeedbacks('paused');
-			break;
+	closeReceiver () {
+		this.in.removeAllListeners()
+		this.in.close()
+		this.in = null
+	}
 
-		case 'resume':
-			exec.paused = false;
+	closeTransmitter () {
+		this.out.removeAllListeners()
+		this.out.close()
+		this.out = null
+	}
 
-			self.checkFeedbacks('paused');
-			break;
+	initVariables () {
+		let varlist = []
 
-		case 'fader':
-			exec.fader = Math.round(data.position.percent);
+		if (this.config.rxExecList) {
+			this.config.rxExecList.split(',').forEach(name => {
+				const exec = this.getExec(name.replace(/^([0-9]+)(\.([0-9]+))?$/,
+					(s, p1, p2, p3) => ((p3 || p1) + '.' + (p3 ? p1 : 1))))
 
-			if (exec.vardef) {
-				self.setVariable('exec:' + exec.name, exec.fader);
+				exec.vardef = true
+				varlist.push({
+					name:  'exec:' + exec.name,
+					label: 'Fader position of exec ' + exec.name
+				})
+			})
+		}
+
+		this.setVariableDefinitions(varlist)
+	}
+
+	updateConfig (config) {
+		this.config = config
+		this.init()
+	}
+
+	getExec (exec) {
+		if (!this.execs.hasOwnProperty(exec)) {
+			this.execs[exec] = {
+				name:   (String(exec).split('.')[1] || 1) + '.' + parseInt(exec),
+				active: undefined,
+				paused: undefined,
+				fader:  undefined,
+				cue:    undefined,
+				vardef: false
 			}
+		}
 
-			self.checkFeedbacks('fader');
-			break;
-
-		case 'off':
-			exec.active = false;
-
-			self.checkFeedbacks('active');
-			break;
-	}
-};
-
-instance.prototype.action = function(action) {
-	var self    = this;
-	var options = action.options;
-
-	if (!self.out) {
-		return;
+		return this.execs[exec]
 	}
 
-	switch (action.action) {
-		case 'goto':
-			self.out.goto(Number(options.cue), self.compileExec(options), Number(options.fade));
-			break;
+	compileExec (options, feedback) {
+		const gma  = this.config.consoleType === 'gma'
+		const exec = options.exec - gma
+		const page = !exec && !feedback && !gma ? 0 : parseInt(options.page) || 1
 
-		case 'pause':
-			self.out.pause(self.compileExec(options));
-			break;
-
-		case 'resume':
-			self.out.resume(self.compileExec(options));
-			break;
-
-		case 'fader':
-			self.out.fader(Number(options.percent), self.compileExec(options), Number(options.fade));
-			break;
-
-		case 'fire':
-			self.out.fire(Number(options.macro));
-			break;
-
-		case 'off':
-			self.out.off(self.compileExec(options));
-			break;
+		return (exec < 0 ? 0 : exec) + '.' + page
 	}
-};
 
-instance.prototype.feedback = function(feedback) {
-	var self    = this;
-	var options = feedback.options;
-	var exec    = self.getExec(self.compileExec(options, true));
-	var style   = {
-		color:   options.foreground,
-		bgcolor: options.background
-	};
+	onMessage (command, data) {
+		const exec = this.getExec(data.exec)
 
-	switch (feedback.type) {
-		case 'active':
-			return exec.active === Boolean(options.active) ? style : {};
+		switch (command) {
+			case 'goto':
+				exec.active = true
+				exec.paused = false
+				exec.cue    = data.cue
 
-		case 'paused':
-			return exec.paused === Boolean(options.paused) ? style : {};
+				this.checkFeedbacks('paused')
+				this.checkFeedbacks('active')
+				this.checkFeedbacks('cue')
+				break
 
-		case 'cue':
-			return exec.cue === Number(options.cue) ? style : {};
+			case 'pause':
+				exec.paused = true
 
-		case 'fader':
-			return eval('exec.fader' + (options.operator || '==') + 'Number(options.fader)') ? style : {};
+				this.checkFeedbacks('paused')
+				break
 
-		default:
-			return {};
+			case 'resume':
+				exec.paused = false
+
+				this.checkFeedbacks('paused')
+				break
+
+			case 'fader':
+				exec.fader = Math.round(data.position.percent)
+
+				if (exec.vardef) {
+					this.setVariable('exec:' + exec.name, exec.fader)
+				}
+
+				this.checkFeedbacks('fader')
+				break
+
+			case 'off':
+				exec.active = false
+
+				this.checkFeedbacks('active')
+				break
+		}
 	}
-};
 
-instance.prototype.config_fields = require('./config');
-instance.prototype.actions       = require('./action');
-instance.prototype.feedbacks     = require('./feedback');
+	action (action) {
+		const options = action.options
 
-instance_skel.extendedBy(instance);
-exports = module.exports = instance;
+		if (!this.out) {
+			return
+		}
+
+		switch (action.action) {
+			case 'goto':
+				this.out.goto(options.cue, this.compileExec(options), Number(options.fade))
+				break
+
+			case 'pause':
+				this.out.pause(this.compileExec(options))
+				break
+
+			case 'resume':
+				this.out.resume(this.compileExec(options))
+				break
+
+			case 'fader':
+				this.out.fader(Number(options.percent), this.compileExec(options), Number(options.fade))
+				break
+
+			case 'fire':
+				this.out.fire(Number(options.macro))
+				break
+
+			case 'off':
+				this.out.off(this.compileExec(options))
+				break
+		}
+	}
+
+	feedback (feedback) {
+		const options = feedback.options
+		const exec    = this.getExec(this.compileExec(options, true))
+		const style   = {
+			color:   options.foreground,
+			bgcolor: options.background
+		}
+
+		switch (feedback.type) {
+			case 'active':
+				return exec.active === Boolean(options.active) ? style : {}
+
+			case 'paused':
+				return exec.paused === Boolean(options.paused) ? style : {}
+
+			case 'cue':
+				return Number(exec.cue) === Number(options.cue) ? style : {}
+
+			case 'fader':
+				return eval('exec.fader' + (options.operator || '==') + 'Number(options.fader)') ? style : {}
+
+			default:
+				return {}
+		}
+	}
+
+}

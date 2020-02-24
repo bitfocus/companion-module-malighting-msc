@@ -1,6 +1,6 @@
 {
 	"name": "malighting-msc",
-	"version": "0.1.3",
+	"version": "0.2.0",
 	"api_version": "1.0.0",
 	"keywords": [
 		"Lighting",
@@ -14,6 +14,6 @@
 	"author": "Christian Volmering <christian@volmering.name>",
 	"license": "MIT",
 	"dependencies": {
-		"mamsc": ">=0.1.6"
+		"mamsc": "^1.0.1"
 	}
 }
