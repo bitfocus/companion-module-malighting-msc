@@ -32,7 +32,7 @@ If you don't define an executor or use `0` then the main executor is assumed on 
 By default page `1` is assumed for all executors. The dot2 only supports control of page `1` via MSC while the grandMA2 does support different pages. Note that the main executor is technically not on a page so when the executor is set to `0` and the console type is set to `dot2`, the page setting isn't used.  
 Some actions support an optional fade time in seconds which can be between `0` and `3600`.  
 Macro numbers can be between `1` and `255`.  
-Be aware that feedbacks are dependent on MSC messages comming from the console and that fader positions or executor states are only known once they've been received.
+Be aware that feedbacks are dependent on MSC messages comming from the console and that fader positions or executor states are only known once they've been received. Also incrementation and decrementation of a fader position can only be done once the current position of the fader has been received.
 
 ## Actions
 | Action | Parameters |
@@ -40,17 +40,17 @@ Be aware that feedbacks are dependent on MSC messages comming from the console a
 | Goto a specific cue | Cue Number, [Executor Number], [Page Number], [Fade Time] |
 | Pause an executor | [Executor Number], [Page Number] |
 | Resume an executor | [Executor Number], [Page Number] |
-| Move a fader to a specific position | Percent, [Executor Number], [Page Number], [Fade Time] |
+| Move a fader | Percent, Action, [Executor Number], [Page Number], [Fade Time] |
 | Fire a macro | Macro Number |
 | Switch an executor off | [Executor Number], [Page Number] |
 
 ## Feedbacks
 | Feedback | Parameters |
 | --- | --- |
-| Executor active state feedback | Executor Number, [Page Number], Active, Foreground Color, Background Color |
-| Executor paused state feedback | Executor Number, [Page Number], Paused, Foreground Color, Background Color |
-| Cue list feedback | Cue Number, Executor Number, [Page Number], Foreground Color, Background Color |
-| Fader position feedback | Percent, Operator, Executor Number, [Page Number], Foreground Color, Background Color |
+| Executor active state feedback | Executor Number, [Page Number], Active, Foreground Color, Background Color, [Button Text] |
+| Executor paused state feedback | Executor Number, [Page Number], Paused, Foreground Color, Background Color, [Button Text] |
+| Cue list feedback | Cue Number, Executor Number, [Page Number], Foreground Color, Background Color, [Button Text] |
+| Fader position feedback | Percent, Operator, Executor Number, [Page Number], Foreground Color, Background Color, [Button Text] |
 
 * * *
 

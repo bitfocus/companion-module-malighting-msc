@@ -92,16 +92,29 @@ exports = module.exports = Base => class extends Base {
 				]
 			},
 			'fader': {
-				label:   'Move a fader to a specific position',
+				label:   'Move a fader',
 				options: [
 					{
 						type:     'number',
 						label:    'Percent',
-						tooltip:  'Position of the fader as percentage',
+						tooltip:  'Percentage to set, increase or decrease',
 						id:       'percent',
 						required: true,
 						min:      0,
 						max:      100
+					},
+					{
+						type:     'dropdown',
+						label:    'Action',
+						tooltip:  'Set, increase or decrease the fader position',
+						id:       'action',
+						required: true,
+						choices:  [
+							{ id: 'set', label: 'Set'      },
+							{ id: 'inc', label: 'Increase' },
+							{ id: 'dec', label: 'Decrease' }
+						],
+						default:  'set'
 					},
 					{
 						type:     'number',

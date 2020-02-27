@@ -42,6 +42,12 @@ exports = module.exports = Base => class extends Base {
 						label:   'Background Color',
 						id:      'background',
 						default: this.rgb(0, 0, 0)
+					},
+					{
+						type:     'textinput',
+						label:    'Button Text',
+						id:       'buttontext',
+						required: false
 					}
 				]
 			},
@@ -85,6 +91,12 @@ exports = module.exports = Base => class extends Base {
 						label:   'Background Color',
 						id:      'background',
 						default: this.rgb(0, 0, 0)
+					},
+					{
+						type:     'textinput',
+						label:    'Button Text',
+						id:       'buttontext',
+						required: false
 					}
 				]
 			},
@@ -130,6 +142,12 @@ exports = module.exports = Base => class extends Base {
 						label:   'Background Color',
 						id:      'background',
 						default: this.rgb(0, 0, 0)
+					},
+					{
+						type:     'textinput',
+						label:    'Button Text',
+						id:       'buttontext',
+						required: false
 					}
 				]
 			},
@@ -191,6 +209,12 @@ exports = module.exports = Base => class extends Base {
 						label:   'Background Color',
 						id:      'background',
 						default: this.rgb(0, 0, 0)
+					},
+					{
+						type:     'textinput',
+						label:    'Button Text',
+						id:       'buttontext',
+						required: false
 					}
 				]
 			}
