@@ -9,7 +9,7 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
-mamsc@^1.0.1:
+mamsc@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/mamsc/-/mamsc-1.0.1.tgz#a5a95197f1980b5790fa0305228242d8ffaa42fc"
   integrity sha512-dgRc3huYtyIEl+zS8VVlecyCa5DU6Lf26uuTsBe28vZ9kUlmq3pAu1OGkWbUhkE82q9xoEMjogz+KmKN5Sgpxw==
