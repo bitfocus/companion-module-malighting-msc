@@ -14,6 +14,6 @@
 	"author": "Christian Volmering <christian@volmering.name>",
 	"license": "MIT",
 	"dependencies": {
-		"mamsc": "^1.0.1"
+		"mamsc": "1.0.1"
 	}
 }
