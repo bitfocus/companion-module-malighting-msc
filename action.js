@@ -1,7 +1,7 @@
 exports = module.exports = Base => class extends Base {
 
 	actions () {
-		this.system.emit('instance_actions', this.id, {
+		this.setActions({
 			'goto': {
 				label:   'Goto a specific cue',
 				options: [
