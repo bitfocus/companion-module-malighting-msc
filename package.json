@@ -15,5 +15,13 @@
 	"license": "MIT",
 	"dependencies": {
 		"mamsc": "1.0.1"
+	},
+	"homepage": "https://github.com/bitfocus/companion-module-malighting-msc#readme",
+	"bugs": {
+		"url": "https://github.com/bitfocus/companion-module-malighting-msc/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/bitfocus/companion-module-malighting-msc.git"
 	}
 }
