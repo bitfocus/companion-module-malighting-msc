@@ -126,9 +126,24 @@ exports = module.exports = class Instance
 					}))))
 
 				exec.vardef = true
+
+				// START: DEPRECATED
 				varlist.push({
 					name:  'exec:' + exec.label,
-					label: 'Fader position of exec ' + exec.label
+					label: 'Fader position of exec ' + exec.label + ' (deprecated)'
+				})
+				// END: DEPRECATED
+
+				;[
+					{ type: 'active', label: 'Active state of exec'   },
+					{ type: 'paused', label: 'Paused state of exec'   },
+					{ type: 'cue',    label: 'Active cue of exec'     },
+					{ type: 'fader',  label: 'Fader position of exec' }
+				].forEach(def => {
+					varlist.push({
+						name:  'exec:' + exec.label + ':' + def.type,
+						label: def.label + ' ' + exec.label
+					})
 				})
 			})
 		}
@@ -199,9 +214,11 @@ exports = module.exports = class Instance
 			case 'fader':
 				exec.fader = Math.round(data.position.percent)
 
+				// START: DEPRECATED
 				if (exec.vardef) {
 					this.setVariable('exec:' + exec.label, exec.fader)
 				}
+				// END: DEPRECATED
 
 				this.checkFeedbacks('fader')
 				break
@@ -274,6 +291,10 @@ exports = module.exports = class Instance
 			style.text = options.buttontext
 		}
 
+		if (exec.vardef) {
+			this.setVariable('exec:' + exec.label + ':' + feedback.type, exec[feedback.type])
+		}
+
 		switch (feedback.type) {
 			case 'active':
 				return exec.active === Boolean(options.active) ? style : {}
@@ -291,5 +312,4 @@ exports = module.exports = class Instance
 				return {}
 		}
 	}
-
 }
