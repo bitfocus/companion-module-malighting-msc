@@ -172,12 +172,6 @@ class MAMSCInstance extends InstanceBase {
 
 				exec.vardef = true
 
-				// START: DEPRECATED
-				varlist.push({
-					variableId: 'exec_' + exec.label,
-					name: 'Fader position of exec ' + exec.label + ' (deprecated)',
-				})
-				// END: DEPRECATED
 				;[
 					{ type: 'active', label: 'Active state of exec' },
 					{ type: 'paused', label: 'Paused state of exec' },
@@ -249,14 +243,8 @@ class MAMSCInstance extends InstanceBase {
 
 			case 'fader':
 				exec.fader = Math.round(data.position.percent)
-
-				// START: DEPRECATED
-				if (exec.vardef) {
-					this.setVariableValues({ ['exec_' + exec.label]: exec.fader })
-				}
-				// END: DEPRECATED
+				
 				this.setVariableValues({ ['exec_' + exec.label + '_fader']: exec.fader })
-
 				this.checkFeedbacks('fader')
 				break
 
