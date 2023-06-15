@@ -2,13 +2,6 @@
 # yarn lockfile v1
 
 
-"@babel/runtime@^7.7.7":
-  version "7.7.7"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.7.7.tgz#194769ca8d6d7790ec23605af9ee3e42a0aa79cf"
-  integrity sha512-uCnC2JEVAu8AKB5do1WRIsvrdJ0flYx/A/9f/6chdacnEZ7LmavjdsDXr5ksYBegxtuTPR5Va9/+13QF/kFkCA==
-  dependencies:
-    regenerator-runtime "^0.13.2"
-
 "@companion-module/base@~1.4.1":
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/@companion-module/base/-/base-1.4.1.tgz#4ddc4ba636b672bcbbc3dc4645634007a49d6189"
@@ -1396,14 +1389,10 @@ lru_map@^0.3.3:
   resolved "https://registry.yarnpkg.com/lru_map/-/lru_map-0.3.3.tgz#b5c8351b9464cbd750335a79650a0ec0e56118dd"
   integrity sha512-Pn9cox5CsMYngeDbmChANltQl+5pi6XmTrraMSzhPmMBbmgcxmqWry0U3PGapCU1yB4/LqCcom7qhHZiF/jGfQ==
 
-mamsc@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/mamsc/-/mamsc-1.0.1.tgz#a5a95197f1980b5790fa0305228242d8ffaa42fc"
-  integrity sha512-dgRc3huYtyIEl+zS8VVlecyCa5DU6Lf26uuTsBe28vZ9kUlmq3pAu1OGkWbUhkE82q9xoEMjogz+KmKN5Sgpxw==
-  dependencies:
-    semver "^5.7.1"
-  optionalDependencies:
-    "@babel/runtime" "^7.7.7"
+mamsc@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/mamsc/-/mamsc-1.1.0.tgz#9966f7989bb34cb2951903c0514de886e80c0bd3"
+  integrity sha512-G7DHKfCCJDnfoTvKdEMjJ47KZMGKJCbFWWyPl6YxoWDlwqHjqyu95qJ8EfaLTeIyoidMnUeRe6awBz2N8jDQsA==
 
 map-stream@~0.1.0:
   version "0.1.0"
@@ -1733,11 +1722,6 @@ rechoir@^0.8.0:
   dependencies:
     resolve "^1.20.0"
 
-regenerator-runtime@^0.13.2:
-  version "0.13.3"
-  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.3.tgz#7cf6a77d8f5c6f60eb73c5fc1955b2ceb01e6bf5"
-  integrity sha512-naKIZz2GQ8JWh///G7L3X6LaQUAMp2lvb1rvwwsURe/VXwD6VMfr+/1NuNw3ag8v2kY1aQ/go5SNn79O9JU7yw==
-
 regexpp@^3.0.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/regexpp/-/regexpp-3.2.0.tgz#0425a2768d8f23bad70ca4b90461fa2f1213e1b2"
@@ -1806,11 +1790,6 @@ schema-utils@^3.1.1, schema-utils@^3.1.2:
     "@types/json-schema" "^7.0.8"
     ajv "^6.12.5"
     ajv-keywords "^3.5.2"
-
-semver@^5.7.1:
-  version "5.7.1"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-5.7.1.tgz#a954f931aeba508d307bbf069eff0c01c96116f7"
-  integrity sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==
 
 semver@^6.1.0:
   version "6.3.0"

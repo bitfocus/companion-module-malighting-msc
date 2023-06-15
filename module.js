@@ -1,15 +1,29 @@
-import { runEntrypoint, InstanceBase, InstanceStatus, Regex } from '@companion-module/base'
+import { runEntrypoint, InstanceBase, InstanceStatus } from '@companion-module/base'
 import { GetConfigFields } from './config.js'
 import { getActionDefinitions } from './action.js'
 import { getFeedbackDefinitions } from './feedback.js'
-import MidiShowControl from 'mamsc'
 import { UpgradeScripts } from './upgrades.js'
+import MidiShowControl from 'mamsc'
 
 class MAMSCInstance extends InstanceBase {
 	constructor(internal) {
 		super(internal)
 
-		this.REGEX_CUE_NUMBER = '/^[1-9]*[0-9](.[0-9]{1,3})?$/'
+		this.REGEX_CUE = /^[1-9]*[0-9](.[0-9]{1,3})?$/
+		this.REGEX_EXEC = /^([0-9]|[1-9][0-9]|[1-8][0-9]{2}|900)$/
+		this.REGEX_PAGE = /^([0-9]|[1-9][0-9]{1,3})$/
+		this.REGEX_PERCENT = /^([0-9]|[1-9][0-9]|100)$/
+		this.REGEX_MACRO = /^([1-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/
+	}
+
+	async parseActionOption(action, option, regex) {
+		const value = String(await this.parseVariablesInString(action.options[option])).trim()
+		
+		if (regex && !regex.test(value)) {
+			throw new Error([ action.controlId, action.actionId, option ].join(' → '))
+		}
+
+		return value
 	}
 
 	compileExec (options, feedback) {
@@ -37,8 +51,6 @@ class MAMSCInstance extends InstanceBase {
 		return this.execs[name]
 	}
 
-
-
 	async init(config) {
 		this.config = config
 
@@ -65,7 +77,6 @@ class MAMSCInstance extends InstanceBase {
 		this.closeSockets()
 	}
 
-	// Return config fields for web config
 	getConfigFields() {
 		return GetConfigFields(this)
 	}
@@ -216,7 +227,6 @@ class MAMSCInstance extends InstanceBase {
 	}
 
 	onMessage(command, data) {
-		console.log(data)
 		const exec = this.getExec(data.exec)
 
 		switch (command) {
@@ -230,6 +240,7 @@ class MAMSCInstance extends InstanceBase {
 					['exec_' + exec.label + '_active']: exec.active,
 					['exec_' + exec.label + '_cue']: exec.cue,
 				})
+
 				this.checkFeedbacks('paused', 'active', 'cue')
 				break
 
@@ -252,6 +263,7 @@ class MAMSCInstance extends InstanceBase {
 				exec.active = false
 				exec.paused = false
 				exec.fader = 0
+				
 				this.setVariableValues({
 					['exec_' + exec.label + '_paused']: exec.paused,
 					['exec_' + exec.label + '_active']: exec.active,
@@ -260,88 +272,6 @@ class MAMSCInstance extends InstanceBase {
 				break
 		}
 	}
-
-	// action(action) {
-	// 	const options = action.options
-
-	// 	if (!this.out) {
-	// 		return
-	// 	}
-
-	// 	switch (action.action) {
-	// 		case 'goto':
-	// 			this.out.goto(options.cue, this.compileExec(options), Number(options.fade))
-	// 			break
-
-	// 		case 'pause':
-	// 			this.out.pause(this.compileExec(options))
-	// 			break
-
-	// 		case 'resume':
-	// 			this.out.resume(this.compileExec(options))
-	// 			break
-
-	// 		case 'fader':
-	// 			const name = this.compileExec(options)
-	// 			const exec = this.getExec(name)
-
-	// 			let percent = Number(options.percent)
-
-	// 			switch (options.action) {
-	// 				case 'inc':
-	// 				case 'dec':
-	// 					if (typeof exec.fader === 'undefined') {
-	// 						return
-	// 					}
-
-	// 					percent = options.action === 'inc' ? exec.fader + percent : exec.fader - percent
-	// 					percent = percent < 0 ? 0 : percent > 100 ? 100 : percent
-
-	// 				default:
-	// 					this.out.fader(percent, name, Number(options.fade))
-	// 			}
-	// 			break
-
-	// 		case 'fire':
-	// 			this.out.fire(Number(options.macro))
-	// 			break
-
-	// 		case 'off':
-	// 			this.out.off(this.compileExec(options))
-	// 			break
-	// 	}
-	// }
-
-	// feedback(feedback) {
-	// 	const options = feedback.options
-	// 	const exec = this.getExec(this.compileExec(options, true))
-	// 	const style = { color: options.foreground, bgcolor: options.background }
-
-	// 	if (options.buttontext) {
-	// 		style.text = options.buttontext
-	// 	}
-
-	// 	if (exec.vardef) {
-	// 		this.setVariable('exec:' + exec.label + ':' + feedback.type, exec[feedback.type])
-	// 	}
-
-	// 	switch (feedback.type) {
-	// 		case 'active':
-	// 			return exec.active === Boolean(options.active) ? style : {}
-
-	// 		case 'paused':
-	// 			return exec.paused === Boolean(options.paused) ? style : {}
-
-	// 		case 'cue':
-	// 			return Number(exec.cue) === Number(options.cue) ? style : {}
-
-	// 		case 'fader':
-	// 			return eval('exec.fader' + (options.operator || '==') + 'Number(options.fader)') ? style : {}
-
-	// 		default:
-	// 			return {}
-	// 	}
-	// }
 }
 
 runEntrypoint(MAMSCInstance, UpgradeScripts)

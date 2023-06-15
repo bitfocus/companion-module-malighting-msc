@@ -13,8 +13,8 @@ export function getFeedbackDefinitions(self) {
 					id: 'exec',
 					required: true,
 					min: 0,
-					max: 127,
-					default: 0,
+					max: 900,
+					default: 0
 				},
 				{
 					type: 'number',
@@ -23,24 +23,24 @@ export function getFeedbackDefinitions(self) {
 					id: 'page',
 					required: false,
 					min: 1,
-					max: 127,
-					default: 1,
+					max: 999,
+					default: 1
 				},
 				{
 					type: 'checkbox',
 					label: 'Active',
 					id: 'active',
-					default: true,
+					default: true
 				},
 			],
 			defaultStyle: {
 				color: combineRgb(255, 255, 255),
-				bgcolor: combineRgb(0, 0, 0),
+				bgcolor: combineRgb(0, 0, 0)
 			},
 			callback: (feedback, context) => {
-				const opt = feedback.options
-				const exec = self.getExec(self.compileExec(opt, true))
-				return exec.active === !!opt.active
+				const state = self.getExec(self.compileExec(feedback.options, true))
+
+				return state.active === !!feedback.options.active
 			},
 		},
 		'paused': {
@@ -54,8 +54,8 @@ export function getFeedbackDefinitions(self) {
 					id: 'exec',
 					required: true,
 					min: 0,
-					max: 127,
-					default: 0,
+					max: 900,
+					default: 0
 				},
 				{
 					type: 'number',
@@ -64,24 +64,24 @@ export function getFeedbackDefinitions(self) {
 					id: 'page',
 					required: false,
 					min: 1,
-					max: 127,
-					default: 1,
+					max: 999,
+					default: 1
 				},
 				{
 					type: 'checkbox',
 					label: 'Paused',
 					id: 'paused',
-					default: true,
+					default: true
 				},
 			],
 			defaultStyle: {
-				color: combineRgb(0, 150, 0),
-				bgcolor: combineRgb(0, 0, 0),
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0)
 			},
 			callback: (feedback, context) => {
-				const opt = feedback.options
-				const exec = self.getExec(self.compileExec(opt, true))
-				return exec.paused === !!opt.paused
+				const state = self.getExec(self.compileExec(feedback.options, true))
+
+				return state.paused === !!feedback.options.paused
 			},
 		},
 		'cue': {
@@ -93,8 +93,8 @@ export function getFeedbackDefinitions(self) {
 					label: 'Cue',
 					tooltip: 'Cue Number',
 					id: 'cue',
-					regex: self.REGEX_CUE_NUMBER,
-					required: true,
+					regex: String(self.REGEX_CUE),
+					required: true
 				},
 				{
 					type: 'number',
@@ -103,8 +103,8 @@ export function getFeedbackDefinitions(self) {
 					id: 'exec',
 					required: true,
 					min: 0,
-					max: 127,
-					default: 0,
+					max: 900,
+					default: 0
 				},
 				{
 					type: 'number',
@@ -113,18 +113,18 @@ export function getFeedbackDefinitions(self) {
 					id: 'page',
 					required: false,
 					min: 1,
-					max: 127,
-					default: 1,
+					max: 999,
+					default: 1
 				},
 			],
 			defaultStyle: {
-				color: combineRgb(150, 150, 0),
-				bgcolor: combineRgb(0, 0, 0),
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0)
 			},
 			callback: (feedback, context) => {
-				const opt = feedback.options
-				const exec = self.getExec(self.compileExec(opt, true))
-				return Number(exec.cue) === Number(opt.cue)
+				const state = self.getExec(self.compileExec(feedback.options, true))
+
+				return Number(state.cue) === Number(feedback.options.cue)
 			},
 		},
 		'fader': {
@@ -138,7 +138,7 @@ export function getFeedbackDefinitions(self) {
 					id: 'fader',
 					required: true,
 					min: 0,
-					max: 100,
+					max: 100
 				},
 				{
 					type: 'dropdown',
@@ -154,7 +154,7 @@ export function getFeedbackDefinitions(self) {
 						{ id: '>', label: '>' },
 						{ id: '<', label: '<' },
 					],
-					default: '==',
+					default: '=='
 				},
 				{
 					type: 'number',
@@ -163,7 +163,7 @@ export function getFeedbackDefinitions(self) {
 					id: 'exec',
 					required: true,
 					min: 0,
-					max: 127,
+					max: 900
 				},
 				{
 					type: 'number',
@@ -172,20 +172,33 @@ export function getFeedbackDefinitions(self) {
 					id: 'page',
 					required: false,
 					min: 1,
-					max: 127,
-					default: 1,
+					max: 999,
+					default: 1
 				},
 			],
 			defaultStyle: {
-				color: combineRgb(150, 0, 0),
-				bgcolor: combineRgb(0, 0, 0),
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0)
 			},
-
 			callback: (feedback, context) => {
-				const opt = feedback.options
-				const exec = self.getExec(self.compileExec(opt, true))
-				return eval('exec.fader' + (opt.operator || '==') + 'Number(opt.fader)')
-			},
-		},
+				const state = self.getExec(self.compileExec(feedback.options, true))
+				const fader = Number(feedback.options.fader)
+
+				switch (feedback.options.operator) {
+					case '!=':
+						return state.fader != fader
+					case '>=':
+						return state.fader >= fader
+					case '<=':
+						return state.fader <= fader
+					case '>':
+						return state.fader > fader
+					case '<':
+						return state.fader < fader
+					default:
+						return state.fader == fader
+				}
+			}
+		}
 	}
 }

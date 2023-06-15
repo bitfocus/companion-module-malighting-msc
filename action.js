@@ -10,31 +10,26 @@ export function getActionDefinitions(self) {
 					label: 'Cue',
 					tooltip: 'Cue Number',
 					id: 'cue',
-					regex: self.REGEX_CUE_NUMBER,
 					useVariables: true,
-					required: true,
+					required: true
 				},
 				{
 					type: 'textinput',
-					label: 'Exec',
+					label: 'Executor',
 					tooltip: 'Executor Number',
 					id: 'exec',
 					required: false,
 					useVariables: true,
-					default: '0',
-					min: 0,
-					max: 127,
+					default: '0'
 				},
 				{
 					type: 'textinput',
 					label: 'Page',
-					tooltip: 'Page Number',
+					tooltip: 'Page Number (grandMA only)',
 					id: 'page',
 					useVariables: true,
 					required: false,
-					min: 1,
-					max: 127,
-					default: '1',
+					default: '1'
 				},
 				{
 					type: 'number',
@@ -43,32 +38,28 @@ export function getActionDefinitions(self) {
 					id: 'fade',
 					useVariables: true,
 					required: false,
+					default: '',
 					min: 0,
-					max: 3600,
-				},
+					max: 3600
+				}
 			],
 			callback: async (action) => {
-				const opt = {
-					exec: await self.parseVariablesInString(action.options.exec),
-					page: await self.parseVariablesInString(action.options.page),
-					cue: await self.parseVariablesInString(action.options.cue),
-					fade: action.options.fade,
-				}
-				let err = ''
+				let cue, exec, page, fade
 
-				if (opt.exec < 0 || opt.exec > 127) {
-					err = 'Exec '
-				} else if (opt.page < 1 || opt.page > 127) {
-					err += 'Page '
-				}
-				if (err != '') {
-					self.updateStatus(InstanceStatus.BadConfig, 'Action: Option ' + err)
-					self.paramError = true
-				} else {
-					!!self.out && self.out.goto(opt.cue, self.compileExec(opt), Number(opt.fade))
+				try {
+					cue = await self.parseActionOption(action, 'cue', self.REGEX_CUE)
+					exec = await self.parseActionOption(action, 'exec', self.REGEX_EXEC)
+					page = await self.parseActionOption(action, 'page', self.REGEX_PAGE)
+					fade = Number(action.options.fade)
+
 					self.updateStatus(InstanceStatus.Ok)
 					self.paramError = false
+				} catch (error) {
+					self.updateStatus(InstanceStatus.BadConfig, error.message)
+					self.paramError = true
 				}
+
+				!!self.out && self.out.goto(cue, self.compileExec({ exec, page }), fade)
 			},
 		},
 		'pause': {
@@ -76,47 +67,38 @@ export function getActionDefinitions(self) {
 			options: [
 				{
 					type: 'textinput',
-					label: 'Exec',
+					label: 'Executor',
 					tooltip: 'Executor Number',
 					id: 'exec',
 					useVariables: true,
 					required: false,
-					default: '0',
-					min: 0,
-					max: 127,
+					default: '0'
 				},
 				{
 					type: 'textinput',
 					label: 'Page',
-					tooltip: 'Page Number',
+					tooltip: 'Page Number (grandMA only)',
 					id: 'page',
 					useVariables: true,
 					required: false,
-					min: 1,
-					max: 127,
-					default: '1',
-				},
+					default: '1'
+				}
 			],
 			callback: async (action) => {
-				const opt = {
-					exec: await self.parseVariablesInString(action.options.exec),
-					page: await self.parseVariablesInString(action.options.page),
-				}
-				let err = ''
+				let exec, page
 
-				if (opt.exec < 0 || opt.exec > 127) {
-					err = 'Exec '
-				} else if (opt.page < 1 || opt.page > 127) {
-					err += 'Page '
-				}
-				if (err != '') {
-					self.updateStatus(InstanceStatus.BadConfig, 'Pause: Option ' + err)
-					self.paramError = true
-				} else {
-					!!self.out && self.out.pause(self.compileExec(opt))
+				try {
+					exec = await self.parseActionOption(action, 'exec', self.REGEX_EXEC)
+					page = await self.parseActionOption(action, 'page', self.REGEX_PAGE)
+
 					self.updateStatus(InstanceStatus.Ok)
 					self.paramError = false
+				} catch (error) {
+					self.updateStatus(InstanceStatus.BadConfig, error.message)
+					self.paramError = true
 				}
+
+				!!self.out && self.out.pause(self.compileExec({ exec, page }))
 			},
 		},
 		'resume': {
@@ -124,46 +106,38 @@ export function getActionDefinitions(self) {
 			options: [
 				{
 					type: 'textinput',
-					label: 'Exec',
+					label: 'Executor',
 					tooltip: 'Executor Number',
 					id: 'exec',
 					useVariables: true,
 					required: false,
-					default: '0',
-					min: 0,
-					max: 127,
+					default: '0'
 				},
 				{
 					type: 'textinput',
 					label: 'Page',
-					tooltip: 'Page Number',
+					tooltip: 'Page Number (grandMA only)',
 					id: 'page',
 					useVariables: true,
 					required: false,
-					min: 1,
-					max: 127,
-					default: '1',
-				},
+					default: '1'
+				}
 			],
 			callback: async (action) => {
-				const opt = {
-					exec: await self.parseVariablesInString(action.options.exec),
-					page: await self.parseVariablesInString(action.options.page),
-				}
-				let err = ''
-				if (opt.exec < 0 || opt.exec > 127) {
-					err = 'Exec '
-				} else if (opt.page < 1 || opt.page > 127) {
-					err += 'Page '
-				}
-				if (err != '') {
-					self.updateStatus(InstanceStatus.BadConfig, 'Resume: Option ' + err)
-					self.paramError = true
-				} else {
-					!!self.out && self.out.resume(self.compileExec(opt))
+				let exec, page
+
+				try {
+					exec = await self.parseActionOption(action, 'exec', self.REGEX_EXEC)
+					page = await self.parseActionOption(action, 'page', self.REGEX_PAGE)
+
 					self.updateStatus(InstanceStatus.Ok)
 					self.paramError = false
+				} catch (error) {
+					self.updateStatus(InstanceStatus.BadConfig, error.message)
+					self.paramError = true
 				}
+
+				!!self.out && self.out.resume(self.compileExec({ exec, page }))
 			},
 		},
 		'fader': {
@@ -175,9 +149,7 @@ export function getActionDefinitions(self) {
 					tooltip: 'Percentage to set, increase or decrease',
 					id: 'percent',
 					useVariables: true,
-					required: true,
-					min: 0,
-					max: 100,
+					required: true
 				},
 				{
 					type: 'dropdown',
@@ -190,29 +162,25 @@ export function getActionDefinitions(self) {
 						{ id: 'inc', label: 'Increase' },
 						{ id: 'dec', label: 'Decrease' },
 					],
-					default: 'set',
+					default: 'set'
 				},
 				{
 					type: 'textinput',
-					label: 'Exec',
+					label: 'Executor',
 					tooltip: 'Executor Number',
 					id: 'exec',
 					useVariables: true,
 					required: false,
-					default: '0',
-					min: 0,
-					max: 127,
+					default: '0'
 				},
 				{
 					type: 'textinput',
 					label: 'Page',
-					tooltip: 'Page Number',
+					tooltip: 'Page Number (grandMA only)',
 					id: 'page',
 					useVariables: true,
 					required: false,
-					min: 1,
-					max: 127,
-					default: '1',
+					default: '1'
 				},
 				{
 					type: 'number',
@@ -220,47 +188,42 @@ export function getActionDefinitions(self) {
 					tooltip: 'Optional fade time in seconds',
 					id: 'fade',
 					required: false,
-					default: 0,
+					default: '',
 					min: 0,
-					max: 3600,
-				},
+					max: 3600
+				}
 			],
 			callback: async (action) => {
-				const opt = {
-					exec: await self.parseVariablesInString(action.options.exec),
-					page: await self.parseVariablesInString(action.options.page),
-					percent: await self.parseVariablesInString(action.options.percent),
-					fade: action.options.fade,
-				}
-				const name = self.compileExec(opt)
-				const exec = self.getExec(name)
+				let percent, exec, page, fade
 
-				let percent = Number(opt.percent)
-				let err = ''
-				if (opt.exec < 0 || opt.exec > 127) {
-					err = 'Exec '
-				} else if (opt.page < 1 || opt.page > 127) {
-					err += 'Page '
-				}
-				if (err != '') {
-					self.updateStatus(InstanceStatus.BadConfig, 'Fader: Option ' + err)
+				try {
+					percent = Number(await self.parseActionOption(action, 'percent', self.REGEX_PERCENT))
+					exec = await self.parseActionOption(action, 'exec', self.REGEX_EXEC)
+					page = await self.parseActionOption(action, 'page', self.REGEX_PAGE)
+					fade = Number(action.options.fade)
+
+					self.updateStatus(InstanceStatus.Ok)
+					self.paramError = false
+				} catch (error) {
+					self.updateStatus(InstanceStatus.BadConfig, error.message)
 					self.paramError = true
-				} else {
-					switch (action.options.action) {
-						case 'inc':
-						case 'dec':
-							if (typeof exec.fader === 'undefined') {
-								return
-							}
+				}
 
-							percent = action.options.action === 'inc' ? exec.fader + percent : exec.fader - percent
-							percent = percent < 0 ? 0 : percent > 100 ? 100 : percent
+				const name = self.compileExec({ exec, page })
+				const state = self.getExec(name)
 
-						default:
-							!!self.out && self.out.fader(percent, name, Number(opt.fade))
-							self.updateStatus(InstanceStatus.Ok)
-							self.paramError = false
-					}
+				switch (action.options.action) {
+					case 'inc':
+					case 'dec':
+						if (typeof state.fader === 'undefined') {
+							return
+						}
+
+						percent = action.options.action === 'inc' ? state.fader + percent : state.fader - percent
+						percent = percent < 0 ? 0 : percent > 100 ? 100 : percent
+
+					default:
+						!!self.out && self.out.fader(percent, name, fade)
 				}
 			},
 		},
@@ -274,25 +237,23 @@ export function getActionDefinitions(self) {
 					id: 'macro',
 					useVariables: true,
 					required: true,
-					default: '1',
-					min: 1,
-					max: 255,
+					default: '1'
 				},
 			],
 			callback: async (action) => {
-				const macro = Number(await self.parseVariablesInString(action.options.macro))
-				let err = ''
-				if (macro < 1 || macro > 255) {
-					err = 'Macro '
-				}
-				if (err != '') {
-					self.updateStatus(InstanceStatus.BadConfig, 'Fire: Option ' + err)
-					self.paramError = true
-				} else {
-					!!self.out && self.out.fire(macro)
+				let macro
+
+				try {
+					macro = await self.parseActionOption(action, 'macro', self.REGEX_MACRO)
+
 					self.updateStatus(InstanceStatus.Ok)
 					self.paramError = false
+				} catch (error) {
+					self.updateStatus(InstanceStatus.BadConfig, error.message)
+					self.paramError = true
 				}
+
+				!!self.out && self.out.fire(macro)
 			},
 		},
 		'off': {
@@ -300,46 +261,38 @@ export function getActionDefinitions(self) {
 			options: [
 				{
 					type: 'textinput',
-					label: 'Exec',
+					label: 'Executor',
 					tooltip: 'Executor Number',
 					id: 'exec',
 					useVariables: true,
 					required: false,
-					default: '0',
-					min: 0,
-					max: 127,
+					default: '0'
 				},
 				{
 					type: 'textinput',
 					label: 'Page',
-					tooltip: 'Page Number',
+					tooltip: 'Page Number (grandMA only)',
 					id: 'page',
 					useVariables: true,
 					required: false,
-					min: 1,
-					max: 127,
-					default: '1',
+					default: '1'
 				},
 			],
 			callback: async (action) => {
-				const opt = {
-					exec: await self.parseVariablesInString(action.options.exec),
-					page: await self.parseVariablesInString(action.options.page),
-				}
-				let err = ''
-				if (opt.exec < 0 || opt.exec > 127) {
-					err = 'Exec '
-				} else if (opt.page < 1 || opt.page > 127) {
-					err += 'Page '
-				}
-				if (err != '') {
-					self.updateStatus(InstanceStatus.BadConfig, 'Off: Invalid ' + err)
-					self.paramError = true
-				} else {
-					!!self.out && self.out.off(self.compileExec(opt))
+				let exec, page
+
+				try {
+					exec = await self.parseActionOption(action, 'exec', self.REGEX_EXEC)
+					page = await self.parseActionOption(action, 'page', self.REGEX_PAGE)
+
 					self.updateStatus(InstanceStatus.Ok)
 					self.paramError = false
+				} catch (error) {
+					self.updateStatus(InstanceStatus.BadConfig, error.message)
+					self.paramError = true
 				}
+
+				!!self.out && self.out.off(self.compileExec({ exec, page }))
 			},
 		},
 	}

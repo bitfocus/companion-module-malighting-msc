@@ -5,8 +5,7 @@ export function GetConfigFields(self) {
 			id: 'info',
 			width: 12,
 			label: 'Console/onPC Configuration',
-			value:
-				"Goto Setup ⇒ MIDI Show Control. Set mode to <code>Ethernet</code>, exec to <code>Exec.Page</code> and the command format to <code>All</code>. MSC In and MSC Out ports need to be between <code>6000</code> and <code>6100</code> and shouldn't be the same to prevent loops.",
+			value: "Goto Setup ⇒ MIDI Show Control. Set mode to <code>Ethernet</code>, exec to <code>Exec.Page</code> and the command format to <code>All</code>. MSC In and MSC Out ports need to be between <code>6000</code> and <code>6100</code> and shouldn't be the same to prevent loops.",
 		},
 		{
 			type: 'textinput',
