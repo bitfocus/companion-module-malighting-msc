@@ -3,7 +3,7 @@
 	"name": "malighting-msc",
 	"shortname": "mamsc",
 	"description": "MIDI Schow Control over Ethernet for MA lighting",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"license": "MIT",
 	"repository": "git+https://github.com/bitfocus/companion-module-malighting-msc.git",
 	"bugs": "https://github.com/bitfocus/companion-module-malighting-msc/issues",

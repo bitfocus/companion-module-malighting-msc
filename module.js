@@ -226,49 +226,50 @@ class MAMSCInstance extends InstanceBase {
 		return (exec < 0 ? 0 : exec) + '.' + page
 	}
 
+
+	updateExec(exec, updates) {
+		let feedbacks = [], values = {}
+
+		for (const [key, value] of Object.entries(updates)) {
+			exec[key] = values[['exec_' + exec.label + '_' + key]] = value
+			feedbacks.push(key)
+		}
+
+		this.setVariableValues(values)
+		this.checkFeedbacks(...feedbacks)
+	}
+	
 	onMessage(command, data) {
 		const exec = this.getExec(data.exec)
 
 		switch (command) {
 			case 'goto':
-				exec.active = true
-				exec.paused = false
-				exec.cue = data.cue
-
-				this.setVariableValues({
-					['exec_' + exec.label + '_paused']: exec.paused,
-					['exec_' + exec.label + '_active']: exec.active,
-					['exec_' + exec.label + '_cue']: exec.cue,
+				this.updateExec(exec, {
+					active: true,
+					paused: false,
+					cue: data.cue
 				})
-
-				this.checkFeedbacks('paused', 'active', 'cue')
 				break
 
 			case 'pause':
 			case 'resume':
-				exec.paused = !!(command == 'pause')
-
-				this.setVariableValues({ ['exec_' + exec.label + '_paused']: exec.paused })
-				this.checkFeedbacks('paused')
+				this.updateExec(exec, {
+					paused: !!(command == 'pause')
+				})
 				break
 
 			case 'fader':
-				exec.fader = Math.round(data.position.percent)
-				
-				this.setVariableValues({ ['exec_' + exec.label + '_fader']: exec.fader })
-				this.checkFeedbacks('fader')
+				this.updateExec(exec, {
+					fader: Math.round(data.position.percent)
+				})
 				break
 
 			case 'off':
-				exec.active = false
-				exec.paused = false
-				exec.fader = 0
-				
-				this.setVariableValues({
-					['exec_' + exec.label + '_paused']: exec.paused,
-					['exec_' + exec.label + '_active']: exec.active,
+				this.updateExec(exec, {
+					active: false,
+					paused: false,
+					fader: 0
 				})
-				this.checkFeedbacks('active', 'paused', 'fader')
 				break
 		}
 	}
