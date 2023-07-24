@@ -4,6 +4,12 @@
 This is an implementation of the MIDI Show Control protocol used by MA lighting.
 While initially developed for the dot2 lineup it also works for grandMA2 with some slight differences which are documented below.
 
+# *IMPORTANT Companion V3.0 UPDATE!*
+**If you use variables from this module in an earlier version of Companion, you will need to update them.**
+
+The deprecated `exec:x.x` variable for fader position has been replaced with 'exec_x.x_fader`. Prior to V3.0, module variables could contain spaces and `:` without any issues. In order to use these variables in more situations (such as triggers and actions), the characters available to name variables needed to be restricted to those allowed in the underlying programming. Unfortunately, these can not be converted on importing/upgrading and need to be fixed manually.
+
+
 ## Console/onPC configuration
 You are required to set the MIDI Show Control mode to `Ethernet`, exec to `Exec.Page` and the command format to `All`.
 The rest of the configuration depends on your needs.
@@ -27,11 +33,11 @@ MIDI channels are ignored when mode is set to `Ethernet`.
 | Console/onPC Type | Type of Console/onPC you want to communicate with. |
 
 ## Limitations
-Generally executor numbers can be between `0` and `127`. This is a protocol limitation.
-If you don't define an executor or use `0` then the main executor is assumed on a dot2 or the first executor on a grandMA2. The grand master can't be controlled through MSC.  
-By default page `1` is assumed for all executors. The dot2 only supports control of page `1` via MSC while the grandMA2 does support different pages. Note that the main executor is technically not on a page so when the executor is set to `0` and the console type is set to `dot2`, the page setting isn't used.  
-Some actions support an optional fade time in seconds which can be between `0` and `3600`.  
-Macro numbers can be between `1` and `255`.  
+~~Generally executor numbers can be between `0` and `127`. This is a protocol limitation.~~ All executor numbers can be used now with one exception: When using fader/intensity actions the executor numbers are still limited between `0` and `127`. The console does send and receive fader/intensity information for higher executor numbers but wraps around above `127`. So it is adviced to either stick to executors below `128` or to not use nor rely on fader/intensity actions/information when using higher executors. Also note that while it works it is documented otherwise and might be subject to change even though unlikely.
+If you don't define an executor or use `0` then the main executor is assumed on a dot2 or the first executor on a grandMA2. The grand master can't be controlled through MSC.
+By default page `1` is assumed for all executors. The dot2 only supports control of page `1` via MSC while the grandMA2 does support different pages. Note that the main executor is technically not on a page so when the executor is set to `0` and the console type is set to `dot2`, the page setting isn't used.
+Some actions support an optional fade time in seconds which can be between `0` and `3600`.
+Macro numbers can be between `1` and `255`.
 Be aware that feedbacks are dependent on MSC messages comming from the console and that fader positions or executor states are only known once they've been received. Also incrementation and decrementation of a fader position can only be done once the current position of the fader has been received.
 
 ## Actions
@@ -47,11 +53,21 @@ Be aware that feedbacks are dependent on MSC messages comming from the console a
 ## Feedbacks
 | Feedback | Parameters |
 | --- | --- |
-| Executor active state feedback | Executor Number, [Page Number], Active, Foreground Color, Background Color, [Button Text] |
-| Executor paused state feedback | Executor Number, [Page Number], Paused, Foreground Color, Background Color, [Button Text] |
-| Cue list feedback | Cue Number, Executor Number, [Page Number], Foreground Color, Background Color, [Button Text] |
-| Fader position feedback | Percent, Operator, Executor Number, [Page Number], Foreground Color, Background Color, [Button Text] |
+| Executor active state feedback | Executor Number, [Page Number], Active |
+| Executor paused state feedback | Executor Number, [Page Number], Paused |
+| Cue list feedback | Cue Number, Executor Number, [Page Number] |
+| Fader position feedback | Percent, Operator, Executor Number, [Page Number] |
+
+## Variables
+| Variable | Description |
+| --- | --- |
+| exec_x.x_fader | Position of fader on executor x.x |
+| exec_x.x_cue | Current Cue on executor x.x |
+| exec_x.x_active | `true` if executor x.x is Active |
+| exec_x.x_paused | `true` if executor x.x is paused |
+
+Replace `x.x` with appropriate Page and Executor numbers
 
 * * *
 
-&copy; 2020 Christian Volmering &lt;christian@volmering.name&gt;
+&copy; 2023 Christian Volmering &lt;christian@volmering.name&gt;

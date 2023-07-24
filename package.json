@@ -1,27 +1,18 @@
 {
 	"name": "malighting-msc",
-	"version": "0.2.3",
-	"api_version": "1.0.0",
-	"keywords": [
-		"Lighting",
-		"Show Control"
-	],
-	"manufacturer": "MA Lighting",
-	"product": "dot2/grandMA2 MSC",
-	"shortname": "mamsc",
-	"description": "MIDI Schow Control over Ethernet for MA lighting",
+	"version": "1.2.0",
+	"type": "module",
 	"main": "module.js",
-	"author": "Christian Volmering <christian@volmering.name>",
 	"license": "MIT",
-	"dependencies": {
-		"mamsc": "1.0.1"
-	},
-	"homepage": "https://github.com/bitfocus/companion-module-malighting-msc#readme",
-	"bugs": {
-		"url": "https://github.com/bitfocus/companion-module-malighting-msc/issues"
-	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/bitfocus/companion-module-malighting-msc.git"
+	},
+	"dependencies": {
+		"@companion-module/base": "~1.4.1",
+		"mamsc": "1.1.0"
+	},
+	"devDependencies": {
+		"@companion-module/tools": "^1.2.1"
 	}
 }
