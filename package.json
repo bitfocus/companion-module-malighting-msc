@@ -13,6 +13,6 @@
 		"mamsc": "1.1.0"
 	},
 	"devDependencies": {
-		"@companion-module/tools": "^1.5.0"
+		"@companion-module/tools": "^1.5.2"
 	}
 }
