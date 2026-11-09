@@ -9,10 +9,10 @@
 		"url": "git+https://github.com/bitfocus/companion-module-malighting-msc.git"
 	},
 	"dependencies": {
-		"@companion-module/base": "^1.8.0",
+		"@companion-module/base": "~1.15.0",
 		"mamsc": "1.1.0"
 	},
 	"devDependencies": {
-		"@companion-module/tools": "^2.8.0"
+		"@companion-module/tools": "^2.9.0"
 	}
 }
